@@ -50,12 +50,12 @@ def loadDatabase():
     global dbPath
     if len(sys.argv) < 2:
         dbPath = "borValBadgeDB.json.gz"
+        if not os.path.isfile(dbPath):
+            data = requests.get('https://github.com/actuallyasmartname/valdbmirror/raw/main/borValBadgeDb.json.gz?download=')
+            with open(dbPath, 'wb') as f:
+                f.write(data.content)
     else:
         dbPath = sys.argv[1]
-    if not os.path.isfile(dbPath):
-        data = requests.get('https://github.com/actuallyasmartname/valdbmirror/raw/main/borValBadgeDb.json.gz?download=')
-        with open(dbPath, 'wb') as f:
-            f.write(data.content)
     global badgeDB
     try:
         badgeDB = Database.from_dict(json.load(gzip.open(dbPath, "r")))
