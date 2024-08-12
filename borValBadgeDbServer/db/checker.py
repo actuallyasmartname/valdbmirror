@@ -81,7 +81,7 @@ def refreshUniverse(universeId, exceptions, doCompact=False):
         created = calendar.timegm(isoparse(badge[0]).utctimetuple())
         badges.append((created, badge[1]))
         
-        day = createdAt // (24 * 60 * 60)
+        day = created // (24 * 60 * 60)
         if day not in days:
             days[day] = []
         days[day].append(badge)
