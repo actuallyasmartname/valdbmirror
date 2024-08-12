@@ -65,7 +65,7 @@ def checkWorker(universeId, exceptions=[]):
     #if universe.badge_count != 0: -- We could be requesting a game with all disabled badges
     dbLock.acquire()
     getBadgeDB().universes[universeId] = universe
-    refreshUniverse(universeId, exceptions, True)
+    refreshUniverse(universeId, True)
     updateBadgeIdCache(universeId)
     dbLock.release()
 
