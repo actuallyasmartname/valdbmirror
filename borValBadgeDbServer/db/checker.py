@@ -51,7 +51,8 @@ def checkWorker(universeId, exceptions):
             print(f"checkWorker@{universeId}: {oldCount} -> {universe.badge_count}. Next cursor: {cursor}", file=sys.stderr)
             if cursor is None or oldCount == universe.badge_count:
                 for badge in exceptions:
-                    universe.badges[str(badge[1])] = BadgeInfo(badge[1], True, calendar.timegm(isoparse(badge[0]).utctimetuple()), int(universeId), isNVL(badge[1]))
+                    if badge["id"] not in universe.free_badges:
+                        universe.badges[str(badge[1])] = BadgeInfo(badge[1], True, calendar.timegm(isoparse(badge[0]).utctimetuple()), int(universeId), isNVL(badge[1]))
                 break
         except Exception:
             traceback.print_exc()
@@ -137,7 +138,7 @@ def refreshUniverse(universeId, exceptions, doCompact=False):
     return len(badges_affected)
 
 
-def startCheck(universeId, exceptions):
+def startCheck(universeId, exceptions=[]):
     checkLock.acquire()
     if universeId not in checksInProgress:
         checksInProgress.add(universeId)
