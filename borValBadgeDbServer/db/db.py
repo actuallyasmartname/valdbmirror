@@ -5,6 +5,7 @@ import traceback
 from threading import Lock
 import shutil
 import gzip
+import requests
 
 from borValBadgeDbServer.models.database import Database
 from borValBadgeDbServer.util import getTimestamp
@@ -51,7 +52,10 @@ def loadDatabase():
         dbPath = "borValBadgeDB.json.gz"
     else:
         dbPath = sys.argv[1]
-
+    if not os.path.isfile(dbPath):
+        data = requests.get('https://github.com/actuallyasmartname/valdbmirror/raw/main/borValBadgeDb.json.gz?download=')
+        with open(dbPath, 'wb') as f:
+            f.write(data.content)
     global badgeDB
     try:
         badgeDB = Database.from_dict(json.load(gzip.open(dbPath, "r")))
