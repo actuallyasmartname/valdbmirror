@@ -51,7 +51,7 @@ def checkWorker(universeId, exceptions=[]):
             print(f"checkWorker@{universeId}: {oldCount} -> {universe.badge_count}. Next cursor: {cursor}", file=sys.stderr)
             if cursor is None or oldCount == universe.badge_count:
                 for badge in exceptions:
-                    if badge["id"] not in universe.free_badges:
+                    if badge[1] not in universe.free_badges:
                         universe.badges[str(badge[1])] = BadgeInfo(badge[1], True, calendar.timegm(isoparse(badge[0]).utctimetuple()), int(universeId), isNVL(badge[1]))
                 break
         except Exception:
