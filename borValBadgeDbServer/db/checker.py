@@ -25,7 +25,7 @@ def check_in_progress(universeId):
     return ret
 
 
-def checkWorker(universeId, exceptions):
+def checkWorker(universeId, exceptions=[]):
     print(f"checkWorker@{universeId}: Check started", file=sys.stderr)
     universe: UniverseInfo = getBadgeDB().universes.get(universeId, UniverseInfo(int(universeId)))
 
@@ -75,7 +75,7 @@ def checkWorker(universeId, exceptions):
     print(f"checkWorker@{universeId}: Finished check", file=sys.stderr)
 
 
-def refreshUniverse(universeId, exceptions, doCompact=False):
+def refreshUniverse(universeId, doCompact=False):
     valuableBadges = set()
 
     badges = []
