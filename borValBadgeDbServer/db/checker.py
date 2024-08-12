@@ -145,7 +145,6 @@ def refreshUniverse(universeId, exceptions, doCompact=False):
 
 
 def startCheck(universeId, exceptions):
-    if type(exceptions)
     checkLock.acquire()
     if universeId not in checksInProgress:
         checksInProgress.add(universeId)
@@ -175,7 +174,7 @@ def missingReportWorker():
             exceptions = []
             url = f"https://badges.roblox.com/v1/badges/{toCheck}"
             resp = requests.get(url).json()
-            if resp['enabled'] = False:
+            if resp['enabled'] == False:
                 exceptions.append((resp['created'], toCheck))
             if "awardingUniverse" not in resp:
                 continue
