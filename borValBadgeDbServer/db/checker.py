@@ -50,6 +50,8 @@ def checkWorker(universeId, exceptions):
             universe.badge_count = len(universe.badges) + len(universe.free_badges)
             print(f"checkWorker@{universeId}: {oldCount} -> {universe.badge_count}. Next cursor: {cursor}", file=sys.stderr)
             if cursor is None or oldCount == universe.badge_count:
+                for badge in exceptions:
+                    universe.badges[str(badge[1])] = BadgeInfo(badge[1], True, calendar.timegm(isoparse(badge[0]).utctimetuple()), int(universeId), isNVL(badge[1]))
                 break
         except Exception:
             traceback.print_exc()
@@ -77,14 +79,6 @@ def refreshUniverse(universeId, exceptions, doCompact=False):
 
     badges = []
     days = {}
-    for badge in exceptions: #Disabled badges
-        created = calendar.timegm(isoparse(badge[0]).utctimetuple())
-        badges.append((created, badge[1]))
-        
-        day = created // (24 * 60 * 60)
-        if day not in days:
-            days[day] = []
-        days[day].append(badge)
 
     for badgeId in getBadgeDB().universes[universeId].badges.keys():
         createdAt = getBadgeDB().universes[universeId].badges[badgeId].created
@@ -106,7 +100,6 @@ def refreshUniverse(universeId, exceptions, doCompact=False):
     for i in range(len(badges)):
         badge = badges[i]
         oldValue = getBadgeDB().universes[universeId].badges[badge[1]].value
-
         if int(badge[1]) <= 2124945818:
             newValue = 2  # Legacy
             badgesToCompact.discard(badge)
