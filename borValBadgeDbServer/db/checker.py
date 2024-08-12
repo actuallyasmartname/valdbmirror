@@ -25,7 +25,7 @@ def check_in_progress(universeId):
     return ret
 
 
-def checkWorker(universeId):
+def checkWorker(universeId, exceptions):
     print(f"checkWorker@{universeId}: Check started", file=sys.stderr)
     universe: UniverseInfo = getBadgeDB().universes.get(universeId, UniverseInfo(int(universeId)))
 
@@ -62,7 +62,7 @@ def checkWorker(universeId):
     if universe.badge_count != 0:
         dbLock.acquire()
         getBadgeDB().universes[universeId] = universe
-        refreshUniverse(universeId, True)
+        refreshUniverse(universeId, exceptions, True)
         updateBadgeIdCache(universeId)
         dbLock.release()
 
@@ -72,11 +72,20 @@ def checkWorker(universeId):
     print(f"checkWorker@{universeId}: Finished check", file=sys.stderr)
 
 
-def refreshUniverse(universeId, doCompact=False):
+def refreshUniverse(universeId, exceptions, doCompact=False):
     valuableBadges = set()
 
     badges = []
     days = {}
+    for badge in exceptions: #Disabled badges
+        created = calendar.timegm(isoparse(badge[0]).utctimetuple())
+        badges.append((created, badge[1]))
+        
+        day = createdAt // (24 * 60 * 60)
+        if day not in days:
+            days[day] = []
+        days[day].append(badge)
+
     for badgeId in getBadgeDB().universes[universeId].badges.keys():
         createdAt = getBadgeDB().universes[universeId].badges[badgeId].created
         badge = (createdAt, badgeId)
@@ -135,11 +144,12 @@ def refreshUniverse(universeId, doCompact=False):
     return len(badges_affected)
 
 
-def startCheck(universeId):
+def startCheck(universeId, exceptions):
+    if type(exceptions)
     checkLock.acquire()
     if universeId not in checksInProgress:
         checksInProgress.add(universeId)
-        Thread(target=checkWorker, args=[universeId], daemon=True).start()
+        Thread(target=checkWorker, args=[universeId, exceptions], daemon=True).start()
     checkLock.release()
 
 
@@ -162,13 +172,15 @@ def missingReportWorker():
 
             if toCheck in getBadgeIdCache():
                 continue
-
+            exceptions = []
             url = f"https://badges.roblox.com/v1/badges/{toCheck}"
-            resp = json.loads(requests.get(url).text)
+            resp = requests.get(url).json()
+            if resp['enabled'] = False:
+                exceptions.append((resp['created'], toCheck))
             if "awardingUniverse" not in resp:
                 continue
 
-            startCheck(str(resp["awardingUniverse"]["id"]))
+            startCheck(str(resp["awardingUniverse"]["id"]), exceptions)
         except Exception:
             traceback.print_exc()
 
