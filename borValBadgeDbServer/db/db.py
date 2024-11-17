@@ -51,7 +51,7 @@ def loadDatabase():
     if len(sys.argv) < 2:
         dbPath = "borValBadgeDB.json.gz"
         if not os.path.isfile(dbPath):
-            data = requests.get('https://github.com/actuallyasmartname/valdbmirror/raw/main/borValBadgeDb.json.gz?download=')
+            data = requests.get('https://files.catbox.moe/xrow1h.gz')
             with open(dbPath, 'wb') as f:
                 f.write(data.content)
     else:
