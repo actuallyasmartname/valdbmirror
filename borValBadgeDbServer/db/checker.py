@@ -34,7 +34,7 @@ def checkWorker(universeId, exceptions=[]):
     while True:
         try:
             oldCount = universe.badge_count
-            url = f"https://badges.roblox.com/v1/universes/{universeId}/badges?limit=100&order=Desc"
+            url = f"https://badges.roblox.com/v1/universes/{universeId}/badges?limit=100&sortOrder=Desc"
             if cursor is not None:
                 url += f"&cursor={cursor}"
 
