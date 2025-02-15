@@ -177,7 +177,6 @@ def missingReportWorker():
         except Exception:
             traceback.print_exc()
 
-
 def reportMissing(badgeIds):
     checkLock.acquire()
     global missingReports
